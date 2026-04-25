@@ -14,8 +14,7 @@ import PortfolioBuilder from '../components/PortfolioBuilder';
 import LearningCards from '../components/LearningCards';
 import {
   STAGE_1_DIALOGUE,
-  MODULE_2_STAGE_1_DIALOGUE,
-  MODULE_2_STAGE_2_QUEST,
+  STAGE_4_DIALOGUE,
   MODULE_3_STAGE_1_DIALOGUE,
   MODULE_3_STAGE_2_CARDS,
   MODULE_3_QUEST,
@@ -81,7 +80,7 @@ export default function Quest() {
       earnBadge('first-investor');
       setShowConfetti(true);
     } else if (globalIndex === 8 && !completedStages.includes(stageId)) {
-      earnBadge('gst-guardian');
+      earnBadge('tax-shield');
       setShowConfetti(true);
     }
 
@@ -117,8 +116,8 @@ export default function Quest() {
       case 'stage-2': return 'Stage 2: Payslip Detective';
       case 'stage-3': return 'Stage 3: Budget Battle';
       case 'stage-4': return 'Stage 1: The Sleeping Money';
-      case 'stage-5': return 'Stage 2: The Money Talk';
-      case 'stage-6': return 'Stage 3: Build Your Portfolio';
+      case 'stage-5': return 'Stage 2: Investment 101';
+      case 'stage-6': return 'Stage 3: Pick Your Vehicle';
       case 'stage-7': return 'Stage 1: The Tax Shield';
       case 'stage-8': return 'Stage 2: GST Mechanics';
       case 'stage-9': return 'Stage 3: Tax Quest';
@@ -261,6 +260,7 @@ export default function Quest() {
             </motion.div>
           )}
 
+
           {/* Complete Screen */}
           {view === 'complete' && (
             <motion.div
@@ -318,8 +318,8 @@ export default function Quest() {
 
                 <div className="complete-next">
                   <div className="complete-locked-module">
-                    <Lock size={14} />
-                    <span>Module 4: Market Dynamics — Coming Soon</span>
+                    <Trophy size={14} className="gold-text" />
+                    <span>All Modules Mastered! You are a WealthQuest Pro.</span>
                   </div>
                   <button className="btn btn-primary" onClick={() => navigate('/')}>
                     Back to Home

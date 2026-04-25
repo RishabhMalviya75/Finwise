@@ -29,6 +29,11 @@ const MODULE_INFO = {
     subtitle: 'Learn how to make your money work for you',
     accent: '#3B82F6',
   },
+  3: {
+    title: 'Module 3: The Tax Shield',
+    subtitle: 'Master GST, CGST/SGST, and Input Tax Credit',
+    accent: '#8B5CF6',
+  },
 };
 
 // Group stages by module number
