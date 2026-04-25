@@ -156,6 +156,38 @@ function RupeeParticles() {
   );
 }
 
+function SideDecorations() {
+  return (
+    <div className="side-decorations" aria-hidden="true">
+      <div className="ambient-orb orb-1"></div>
+      <div className="ambient-orb orb-2"></div>
+      <div className="ambient-orb orb-3"></div>
+      
+      <div className="side-graphic sg-left">
+        <svg width="80" height="400" viewBox="0 0 80 400" fill="none" stroke="currentColor">
+          <circle cx="40" cy="40" r="24" strokeWidth="1" strokeOpacity="0.15" strokeDasharray="4 4" />
+          <circle cx="40" cy="40" r="12" strokeWidth="1" strokeOpacity="0.1" />
+          <path d="M40 64 V336" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="2 6" />
+          <rect x="25" y="160" width="30" height="30" rx="4" strokeWidth="1" strokeOpacity="0.15" transform="rotate(45 40 175)" />
+          <rect x="25" y="240" width="30" height="30" rx="4" strokeWidth="1" strokeOpacity="0.15" transform="rotate(45 40 255)" />
+          <circle cx="40" cy="360" r="8" strokeWidth="1" strokeOpacity="0.1" />
+        </svg>
+      </div>
+
+      <div className="side-graphic sg-right">
+        <svg width="80" height="400" viewBox="0 0 80 400" fill="none" stroke="currentColor">
+          <circle cx="40" cy="40" r="8" strokeWidth="1" strokeOpacity="0.1" />
+          <path d="M40 48 V336" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="2 6" />
+          <rect x="25" y="120" width="30" height="30" rx="4" strokeWidth="1" strokeOpacity="0.1" />
+          <path d="M20 220 L60 220 M20 230 L60 230 M20 240 L60 240" strokeWidth="1" strokeOpacity="0.1" />
+          <circle cx="40" cy="360" r="24" strokeWidth="1" strokeOpacity="0.15" strokeDasharray="4 4" />
+          <circle cx="40" cy="360" r="12" strokeWidth="1" strokeOpacity="0.1" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 function AnimatedStat({ value, label, index }) {
   const [count, setCount] = useState('0');
   const ref = useRef(null);
@@ -219,6 +251,7 @@ export default function Landing() {
     <div className="landing">
       <div className="grid-overlay" />
       <RupeeParticles />
+      <SideDecorations />
 
       {/* ── Floating XP badges ── */}
       <XpFloater />

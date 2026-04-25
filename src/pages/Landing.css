@@ -816,7 +816,76 @@
   }
 }
 
-/* ── Background Animations ── */
+/* ── Background Animations & Decorations ── */
+.side-decorations {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  animation: float-orb 20s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  top: 5%;
+  left: -15vw;
+  width: 40vw;
+  height: 40vw;
+  background: var(--neon-glow-strong);
+}
+
+.orb-2 {
+  top: 45%;
+  right: -15vw;
+  width: 35vw;
+  height: 35vw;
+  background: var(--gold-glow);
+  animation-delay: -7s;
+  animation-duration: 25s;
+}
+
+.orb-3 {
+  bottom: 5%;
+  left: 20%;
+  width: 50vw;
+  height: 50vw;
+  background: color-mix(in srgb, var(--neon-secondary) 25%, transparent);
+  animation-delay: -14s;
+}
+
+@keyframes float-orb {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 60px) scale(1.1); }
+  100% { transform: translate(-30px, 30px) scale(0.95); }
+}
+
+.side-graphic {
+  position: absolute;
+  top: 20%;
+  height: 100vh;
+  color: var(--neon-primary);
+  opacity: 0.6;
+}
+
+.sg-left {
+  left: 20px;
+}
+
+.sg-right {
+  right: 20px;
+}
+
+@media (max-width: 1300px) {
+  .side-graphic { display: none; }
+}
+
 .xp-floater-wrap {
   position: absolute;
   inset: 0;
