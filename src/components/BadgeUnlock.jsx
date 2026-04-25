@@ -1,9 +1,27 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
+import { playBadgeUnlock } from '../utils/audio';
+import { Trophy, Award, Zap, FileCheck, ShieldCheck, Wallet, Swords, Flame } from 'lucide-react';
+import { useEffect } from 'react';
 import './BadgeUnlock.css';
+
+const ICON_MAP = {
+  'file-check': FileCheck,
+  'shield-check': ShieldCheck,
+  'wallet': Wallet,
+  'swords': Swords,
+  'flame': Flame,
+};
 
 export default function BadgeUnlock() {
   const { showBadgeUnlock, lastBadgeEarned, dismissBadge } = useGame();
+  
+  // Play badge unlock jingle
+  useEffect(() => {
+    if (showBadgeUnlock) {
+      playBadgeUnlock();
+    }
+  }, [showBadgeUnlock]);
   
   if (!lastBadgeEarned) return null;
   
@@ -59,16 +77,22 @@ export default function BadgeUnlock() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <span className="badge-unlock-label">🏆 BADGE UNLOCKED</span>
+              <div className="badge-unlock-label">
+                <Trophy size={14} />
+                <span>BADGE UNLOCKED</span>
+              </div>
             </motion.div>
             
             <motion.div
-              className="badge-emoji-display"
+              className="badge-icon-display"
               initial={{ scale: 0 }}
               animate={{ scale: [0, 1.4, 1] }}
               transition={{ delay: 0.6, duration: 0.6, ease: 'easeOut' }}
             >
-              {lastBadgeEarned.emoji}
+              {(() => {
+                const Icon = ICON_MAP[lastBadgeEarned.lucideIcon] || Award;
+                return <Icon size={48} className="badge-award-icon" />;
+              })()}
             </motion.div>
             
             <motion.h2
@@ -95,6 +119,7 @@ export default function BadgeUnlock() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.2 }}
             >
+              <Zap size={14} className="badge-xp-icon" />
               <span className="badge-xp-amount">+{lastBadgeEarned.xpReward} XP</span>
             </motion.div>
             
@@ -108,7 +133,7 @@ export default function BadgeUnlock() {
                 dismissBadge();
               }}
             >
-              Awesome! 🎉
+              Awesome!
             </motion.button>
           </motion.div>
         </motion.div>

@@ -1,322 +1,179 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CTC_COMPONENTS, CTC_QUIZ } from '../data/storyData';
+import { PAYSLIP_LINES, CHARACTERS } from '../data/storyData';
 import { useGame } from '../contexts/GameContext';
+import { playCorrect } from '../utils/audio';
+import {
+  Banknote, Home, Sparkles, Lock, FileText, Landmark,
+  Check, EyeOff, ChevronRight, Hand
+} from 'lucide-react';
 import './CTCBreakdown.css';
 
+const ICON_MAP = {
+  banknote: Banknote,
+  home: Home,
+  sparkles: Sparkles,
+  lock: Lock,
+  'file-text': FileText,
+  landmark: Landmark,
+};
+
 export default function CTCBreakdown({ onComplete }) {
-  const [revealedCards, setRevealedCards] = useState([]);
-  const [selectedCard, setSelectedCard] = useState(null);
-  const [phase, setPhase] = useState('explore'); // explore | quiz | complete
-  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+  const [revealedLines, setRevealedLines] = useState([]);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   
-  const { addXp, loseHeart, hearts } = useGame();
+  const { addXp } = useGame();
   
-  const earnings = CTC_COMPONENTS.filter(c => c.type === 'earning');
-  const deductions = CTC_COMPONENTS.filter(c => c.type === 'deduction');
-  const employerCosts = CTC_COMPONENTS.filter(c => c.type === 'employer-cost');
+  const currentLine = PAYSLIP_LINES[currentLineIndex];
   
-  const allRevealed = revealedCards.length >= CTC_COMPONENTS.length;
-  
-  const handleCardClick = (component) => {
-    setSelectedCard(component);
-    if (!revealedCards.includes(component.id)) {
-      setRevealedCards(prev => [...prev, component.id]);
-      addXp(15);
-    }
+  const handleReveal = (lineId) => {
+    // Only allow revealing the current unrevealed line
+    if (revealedLines.includes(lineId) || lineId !== currentLine?.id) return;
+    
+    playCorrect();
+    addXp(currentLine.xpReward);
+    setRevealedLines(prev => [...prev, lineId]);
+    setShowExplanation(true);
   };
   
-  const handleCloseDetail = () => {
-    setSelectedCard(null);
-    if (allRevealed || revealedCards.length >= CTC_COMPONENTS.length - 1) {
-      // Check after closing if all revealed
-      setTimeout(() => {
-        if (revealedCards.length >= CTC_COMPONENTS.length - 1) {
-          setPhase('quiz');
-        }
-      }, 300);
-    }
-  };
-  
-  const handleAnswer = (option) => {
-    if (selectedAnswer) return;
-    setSelectedAnswer(option.id);
+  const handleNext = () => {
+    setShowExplanation(false);
     
-    const currentQuestion = CTC_QUIZ[currentQuizIndex];
-    
-    if (option.correct) {
-      addXp(currentQuestion.xpReward);
+    if (currentLineIndex < PAYSLIP_LINES.length - 1) {
+      setCurrentLineIndex(prev => prev + 1);
     } else {
-      loseHeart();
-    }
-    
-    setTimeout(() => setShowExplanation(true), 600);
-  };
-  
-  const handleNextQuestion = () => {
-    if (currentQuizIndex < CTC_QUIZ.length - 1) {
-      setCurrentQuizIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-    } else {
-      setPhase('complete');
-      setTimeout(() => onComplete?.(), 500);
+      setIsComplete(true);
+      setTimeout(() => onComplete?.(), 800);
     }
   };
   
-  const totalEarnings = earnings.reduce((s, c) => s + c.monthlyAmount, 0);
-  const totalDeductions = deductions.reduce((s, c) => s + c.monthlyAmount, 0);
-  const totalEmployer = employerCosts.reduce((s, c) => s + c.monthlyAmount, 0);
-  const inHand = totalEarnings - totalDeductions;
+  const totalEarnings = PAYSLIP_LINES.filter(l => l.type === 'earning').reduce((s, l) => s + l.amount, 0);
+  const totalDeductions = PAYSLIP_LINES.filter(l => l.type === 'deduction').reduce((s, l) => s + Math.abs(l.amount), 0);
+  const netPay = totalEarnings - totalDeductions;
   
+  const explainerId = currentLine?.character || 'laxmi';
+  const explainer = CHARACTERS[explainerId];
+
   return (
-    <div className="ctc-breakdown">
-      {phase === 'explore' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="ctc-explorer"
-        >
-          <div className="ctc-header">
-            <h2 className="ctc-title">Your Payslip Decoded</h2>
-            <p className="ctc-subtitle">
-              Tap each card to discover where your money goes
-            </p>
-            <div className="ctc-progress-bar">
-              <div
-                className="ctc-progress-fill"
-                style={{ width: `${(revealedCards.length / CTC_COMPONENTS.length) * 100}%` }}
-              />
-              <span className="ctc-progress-text">
-                {revealedCards.length}/{CTC_COMPONENTS.length} discovered
+    <div className="payslip-quest">
+      {/* Header */}
+      <div className="pq-header">
+        <h2 className="pq-title">Payslip Detective</h2>
+        <div className="pq-progress-bar">
+          <div
+            className="pq-progress-fill"
+            style={{ width: `${(revealedLines.length / PAYSLIP_LINES.length) * 100}%` }}
+          />
+        </div>
+        <span className="pq-progress-text">
+          {revealedLines.length}/{PAYSLIP_LINES.length} items revealed
+        </span>
+      </div>
+      
+      {/* Payslip Card */}
+      <div className="payslip-card">
+        <div className="payslip-card-header">
+          <span className="payslip-company">TechNova Solutions</span>
+          <span className="payslip-period">April 2026</span>
+        </div>
+        
+        <div className="payslip-lines">
+          {PAYSLIP_LINES.map((line, i) => {
+            const isRevealed = revealedLines.includes(line.id);
+            const isCurrent = i === currentLineIndex && !isRevealed;
+            const IconComponent = ICON_MAP[line.lucideIcon] || FileText;
+            
+            return (
+              <motion.div
+                key={line.id}
+                className={`payslip-line ${isRevealed ? 'revealed' : 'blurred'} ${isCurrent ? 'current clickable' : ''} ${line.type}`}
+                onClick={() => handleReveal(line.id)}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.06 }}
+                whileHover={isCurrent ? { scale: 1.02, x: 5 } : {}}
+                whileTap={isCurrent ? { scale: 0.98 } : {}}
+              >
+                <div className="pl-left">
+                  <div className={`pl-icon-wrap ${line.type}`}>
+                    {isRevealed ? (
+                      <IconComponent size={14} />
+                    ) : (
+                      <EyeOff size={14} />
+                    )}
+                  </div>
+                  <span className={`pl-label ${isRevealed ? '' : 'blur-text'}`}>
+                    {isRevealed ? line.label : '██████████'}
+                  </span>
+                </div>
+                <div className="pl-right">
+                  {isRevealed ? (
+                    <span className={`pl-amount ${line.type}`}>
+                      {line.amount < 0 ? '-' : ''}₹{Math.abs(line.amount).toLocaleString('en-IN')}
+                    </span>
+                  ) : (
+                    <span className="pl-amount blur-text">₹████</span>
+                  )}
+                  {isCurrent && !isRevealed && (
+                    <motion.div 
+                      className="pl-tap-hint"
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      <Hand size={14} /> Tap to reveal
+                    </motion.div>
+                  )}
+                  {isRevealed && (
+                    <Check size={14} className="pl-check" />
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+          
+          {/* Net Pay row */}
+          <div className="payslip-line net-pay-line">
+            <div className="pl-left">
+              <div className="pl-icon-wrap net-pay">
+                <Banknote size={14} />
+              </div>
+              <span className="pl-label net-pay-label">Net Pay (In-Hand)</span>
+            </div>
+            <div className="pl-right">
+              <span className="pl-amount net-pay-amount">
+                {isComplete ? `₹${netPay.toLocaleString('en-IN')}` : '₹?????'}
               </span>
             </div>
           </div>
-          
-          {/* Summary Numbers */}
-          <div className="ctc-summary">
-            <div className="ctc-summary-item ctc-ctc">
-              <span className="summary-label">Monthly CTC</span>
-              <span className="summary-value">₹{(66667).toLocaleString('en-IN')}</span>
-            </div>
-            <div className="ctc-summary-arrow">→</div>
-            <div className="ctc-summary-item ctc-inhand">
-              <span className="summary-label">In-Hand</span>
-              <span className="summary-value">₹{inHand.toLocaleString('en-IN')}</span>
-            </div>
-          </div>
-          
-          {/* Earnings */}
-          <div className="ctc-section">
-            <h3 className="section-title section-earnings">
-              <span className="section-icon">💰</span> Earnings
-              <span className="section-total">₹{totalEarnings.toLocaleString('en-IN')}/mo</span>
-            </h3>
-            <div className="ctc-cards">
-              {earnings.map((component, i) => (
-                <ComponentCard
-                  key={component.id}
-                  component={component}
-                  isRevealed={revealedCards.includes(component.id)}
-                  onClick={() => handleCardClick(component)}
-                  delay={i * 0.1}
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* Deductions */}
-          <div className="ctc-section">
-            <h3 className="section-title section-deductions">
-              <span className="section-icon">📉</span> Deductions
-              <span className="section-total">-₹{totalDeductions.toLocaleString('en-IN')}/mo</span>
-            </h3>
-            <div className="ctc-cards">
-              {deductions.map((component, i) => (
-                <ComponentCard
-                  key={component.id}
-                  component={component}
-                  isRevealed={revealedCards.includes(component.id)}
-                  onClick={() => handleCardClick(component)}
-                  delay={i * 0.1}
-                  isDeduction
-                />
-              ))}
-            </div>
-          </div>
-          
-          {/* Employer Costs */}
-          <div className="ctc-section">
-            <h3 className="section-title section-employer">
-              <span className="section-icon">🏢</span> Employer Costs (Hidden in CTC)
-              <span className="section-total">₹{totalEmployer.toLocaleString('en-IN')}/mo</span>
-            </h3>
-            <div className="ctc-cards">
-              {employerCosts.map((component, i) => (
-                <ComponentCard
-                  key={component.id}
-                  component={component}
-                  isRevealed={revealedCards.includes(component.id)}
-                  onClick={() => handleCardClick(component)}
-                  delay={i * 0.1}
-                  isEmployer
-                />
-              ))}
-            </div>
-          </div>
-          
-          {allRevealed && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="ctc-all-revealed"
-            >
-              <p>🎉 All components discovered! Time for a quick quiz!</p>
-              <button className="btn btn-primary" onClick={() => setPhase('quiz')}>
-                Start Quiz ⚡
-              </button>
-            </motion.div>
-          )}
-        </motion.div>
-      )}
+        </div>
+      </div>
       
-      {/* Detail Modal */}
-      <AnimatePresence>
-        {selectedCard && (
+      {/* Explanation Dialog Card */}
+      <AnimatePresence mode="wait">
+        {showExplanation && currentLine && (
           <motion.div
-            className="card-detail-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={handleCloseDetail}
+            className="pq-dialogue-card"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            style={{ '--explainer-color': explainer.color }}
           >
-            <motion.div
-              className={`card-detail ${selectedCard.type === 'deduction' ? 'detail-deduction' : selectedCard.type === 'employer-cost' ? 'detail-employer' : 'detail-earning'}`}
-              initial={{ scale: 0.8, y: 30 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 30 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="detail-icon">{selectedCard.icon}</div>
-              <h3 className="detail-name">{selectedCard.name}</h3>
-              <div className="detail-amounts">
-                <div className="detail-amount-item">
-                  <span className="detail-amount-label">Monthly</span>
-                  <span className="detail-amount-value">
-                    {selectedCard.type === 'deduction' ? '-' : ''}₹{selectedCard.monthlyAmount.toLocaleString('en-IN')}
-                  </span>
-                </div>
-                <div className="detail-amount-item">
-                  <span className="detail-amount-label">Annual</span>
-                  <span className="detail-amount-value">
-                    {selectedCard.type === 'deduction' ? '-' : ''}₹{selectedCard.annualAmount.toLocaleString('en-IN')}
-                  </span>
-                </div>
-              </div>
-              <p className="detail-description">{selectedCard.description}</p>
-              <div className="detail-reveal">
-                <span className="detail-reveal-icon">💡</span>
-                <span className="detail-reveal-text">{selectedCard.revealText}</span>
-              </div>
-              <button className="btn btn-outline" onClick={handleCloseDetail}>Got it! ✓</button>
-            </motion.div>
+            <div className="pq-dialogue-avatar">
+              <img src={explainer.avatar} alt={explainer.name} />
+            </div>
+            <div className="pq-dialogue-content">
+              <div className="pq-dialogue-name">{explainer.name}</div>
+              <p className="pq-dialogue-text">{currentLine.explanation}</p>
+              <button className="btn btn-primary pq-dialogue-btn" onClick={handleNext}>
+                {currentLineIndex < PAYSLIP_LINES.length - 1 ? 'Got it' : 'Finish'} <ChevronRight size={16} />
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
       
-      {/* Quiz Phase */}
-      {phase === 'quiz' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="ctc-quiz"
-        >
-          <div className="quiz-header">
-            <span className="quiz-badge">⚡ KNOWLEDGE CHECK</span>
-            <span className="quiz-count">{currentQuizIndex + 1}/{CTC_QUIZ.length}</span>
-          </div>
-          
-          <h3 className="quiz-question">{CTC_QUIZ[currentQuizIndex].question}</h3>
-          
-          <div className="quiz-options">
-            {CTC_QUIZ[currentQuizIndex].options.map((option, i) => {
-              let optClass = 'quiz-option';
-              if (selectedAnswer) {
-                if (option.correct) optClass += ' correct';
-                else if (option.id === selectedAnswer && !option.correct) optClass += ' wrong';
-              }
-              
-              return (
-                <motion.button
-                  key={option.id}
-                  className={optClass}
-                  onClick={() => handleAnswer(option)}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  disabled={!!selectedAnswer}
-                >
-                  <span className="option-letter">{String.fromCharCode(65 + i)}</span>
-                  <span className="option-text">{option.text}</span>
-                  {selectedAnswer && option.correct && <span className="option-check">✓</span>}
-                  {selectedAnswer === option.id && !option.correct && <span className="option-cross">✗</span>}
-                </motion.button>
-              );
-            })}
-          </div>
-          
-          <AnimatePresence>
-            {showExplanation && (
-              <motion.div
-                className="quiz-explanation"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-              >
-                <p>{CTC_QUIZ[currentQuizIndex].explanation}</p>
-                <button className="btn btn-primary" onClick={handleNextQuestion}>
-                  {currentQuizIndex < CTC_QUIZ.length - 1 ? 'Next Question →' : 'Complete Quest! 🏆'}
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      )}
     </div>
-  );
-}
-
-function ComponentCard({ component, isRevealed, onClick, delay = 0, isDeduction = false, isEmployer = false }) {
-  return (
-    <motion.div
-      className={`component-card ${isRevealed ? 'revealed' : 'locked'} ${isDeduction ? 'card-deduction' : ''} ${isEmployer ? 'card-employer' : ''}`}
-      onClick={onClick}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      whileHover={{ scale: 1.02, y: -2 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <div className="card-left">
-        <span className="card-icon">{isRevealed ? component.icon : '❓'}</span>
-        <div className="card-info">
-          <span className="card-name">{isRevealed ? component.name : 'Tap to Discover'}</span>
-          {isRevealed && (
-            <span className="card-amount">
-              {isDeduction ? '-' : ''}₹{component.monthlyAmount.toLocaleString('en-IN')}/mo
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="card-right">
-        {isRevealed ? (
-          <span className="card-status revealed-status">✓</span>
-        ) : (
-          <span className="card-status locked-status">🔒</span>
-        )}
-      </div>
-    </motion.div>
   );
 }

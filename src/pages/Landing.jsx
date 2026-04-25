@@ -2,19 +2,24 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGame } from '../contexts/GameContext';
 import { useState } from 'react';
+import {
+  FileText, Gamepad2, Wallet, Trophy, Play, Swords,
+  Clapperboard, AlertCircle, Search, Dumbbell,
+  Code, PenTool, Briefcase, Coins, Zap, Heart
+} from 'lucide-react';
 import './Landing.css';
 
 const FEATURES = [
-  { emoji: '📋', title: 'Payslip Decoded', desc: 'Understand CTC, TDS, EPF — through story, not formulas' },
-  { emoji: '🎮', title: 'Learn by Playing', desc: 'RPG quests, not boring lectures. Every concept is a game' },
-  { emoji: '💰', title: 'Budget Like a Pro', desc: 'Master the 50/30/20 rule with interactive challenges' },
-  { emoji: '🏆', title: 'Earn & Flex', desc: 'XP, badges, streaks — show off your financial mastery' },
+  { icon: FileText, title: 'Payslip Decoded', desc: 'Understand CTC, TDS, EPF — through story, not formulas' },
+  { icon: Gamepad2, title: 'Learn by Playing', desc: 'RPG quests, not boring lectures. Every concept is a game' },
+  { icon: Wallet, title: 'Budget Like a Pro', desc: 'Master the 50/30/20 rule with interactive challenges' },
+  { icon: Trophy, title: 'Earn & Level Up', desc: 'XP, badges, streaks — show off your financial mastery' },
 ];
 
 const TESTIMONIALS = [
-  { text: '"I finally understand why my in-hand is ₹52K and not ₹66K!"', name: 'Priya, SDE-1', emoji: '👩‍💻' },
-  { text: '"Wish I had this when I got my first offer letter."', name: 'Rahul, Product Analyst', emoji: '👨‍💼' },
-  { text: '"The Tax-Man character is hilarious 😂"', name: 'Ananya, UI Designer', emoji: '👩‍🎨' },
+  { text: '"I finally understand why my in-hand is ₹52K and not ₹66K!"', name: 'Priya, SDE-1', icon: Code },
+  { text: '"Wish I had this when I got my first offer letter."', name: 'Rahul, Product Analyst', icon: Briefcase },
+  { text: '"The Tax-Man character is hilarious."', name: 'Ananya, UI Designer', icon: PenTool },
 ];
 
 export default function Landing() {
@@ -38,29 +43,29 @@ export default function Landing() {
     <div className="landing">
       <div className="grid-overlay" />
       
-      {/* Floating particles */}
+      {/* Floating particles — decorative dots instead of emoji */}
       <div className="landing-particles">
-        {['💰', '📊', '🎯', '⚡', '🔥', '🏆', '💎', '📋'].map((emoji, i) => (
-          <motion.span
+        {Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
             key={i}
-            className="floating-particle"
+            className="floating-dot"
             style={{
               left: `${10 + (i * 12) % 80}%`,
               top: `${15 + (i * 17) % 70}%`,
+              background: ['var(--neon-primary)', 'var(--gold-primary)', 'var(--success)', 'var(--neon-secondary)'][i % 4],
+              width: `${4 + (i % 3) * 2}px`,
+              height: `${4 + (i % 3) * 2}px`,
             }}
             animate={{
               y: [0, -20, 0],
-              rotate: [0, 10, -10, 0],
-              opacity: [0.15, 0.3, 0.15],
+              opacity: [0.15, 0.4, 0.15],
             }}
             transition={{
               duration: 4 + i * 0.7,
               repeat: Infinity,
               delay: i * 0.5,
             }}
-          >
-            {emoji}
-          </motion.span>
+          />
         ))}
       </div>
       
@@ -93,7 +98,8 @@ export default function Landing() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            Duolingo for Money 💰
+            <Coins size={18} className="hero-tagline-icon" />
+            Duolingo for Money
           </motion.p>
           
           <motion.p
@@ -133,11 +139,15 @@ export default function Landing() {
             )}
             
             <button className="btn btn-primary hero-cta" onClick={handleStart} id="start-quest-btn">
-              {showNameInput ? '⚔️ Begin Your Quest' : '🎮 Start Quest'}
+              {showNameInput ? (
+                <><Swords size={16} /> Begin Your Quest</>
+              ) : (
+                <><Play size={16} /> Start Quest</>
+              )}
             </button>
             
             <span className="hero-cta-subtext">
-              No sign-up required • 10 min adventure • 100% free
+              No sign-up required · 10 min adventure · 100% free
             </span>
           </motion.div>
         </motion.div>
@@ -153,7 +163,7 @@ export default function Landing() {
             <div className="hero-card hero-card-payslip">
               <div className="hc-header">
                 <span className="hc-company">TechNova Solutions</span>
-                <span className="hc-month">Payslip • April 2026</span>
+                <span className="hc-month">Payslip · April 2026</span>
               </div>
               <div className="hc-row">
                 <span>Basic Salary</span>
@@ -184,9 +194,12 @@ export default function Landing() {
               animate={{ rotate: [2, -2, 2] }}
               transition={{ duration: 4, repeat: Infinity }}
             >
-              <span className="hcb-emoji">🏆</span>
+              <Trophy size={24} className="hcb-icon" />
               <span className="hcb-text">Payslip Pro</span>
-              <span className="hcb-xp">+200 XP</span>
+              <div className="hcb-xp">
+                <Zap size={12} />
+                <span>+200 XP</span>
+              </div>
             </motion.div>
           </div>
         </motion.div>
@@ -195,21 +208,26 @@ export default function Landing() {
       {/* Features */}
       <section className="features-section">
         <div className="features-grid">
-          {FEATURES.map((feature, i) => (
-            <motion.div
-              key={i}
-              className="feature-card glass"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              whileHover={{ y: -4, borderColor: 'rgba(0, 212, 255, 0.3)' }}
-            >
-              <span className="feature-emoji">{feature.emoji}</span>
-              <h3 className="feature-title">{feature.title}</h3>
-              <p className="feature-desc">{feature.desc}</p>
-            </motion.div>
-          ))}
+          {FEATURES.map((feature, i) => {
+            const Icon = feature.icon;
+            return (
+              <motion.div
+                key={i}
+                className="feature-card glass"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -4, borderColor: 'rgba(0, 212, 255, 0.3)' }}
+              >
+                <div className="feature-icon-wrap">
+                  <Icon size={22} />
+                </div>
+                <h3 className="feature-title">{feature.title}</h3>
+                <p className="feature-desc">{feature.desc}</p>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
       
@@ -218,28 +236,33 @@ export default function Landing() {
         <h2 className="section-heading">How WealthQuest Works</h2>
         <div className="how-steps">
           {[
-            { step: '01', title: 'Start Your Story', desc: 'Experience getting your first job offer — ₹8 LPA!', emoji: '🎬' },
-            { step: '02', title: 'The Surprise', desc: 'Your payslip says ₹52,000. Wait, what happened?!', emoji: '😱' },
-            { step: '03', title: 'Decode & Learn', desc: 'Discover CTC, TDS, EPF through interactive quests', emoji: '🔍' },
-            { step: '04', title: 'Master Your Money', desc: 'Budget your salary. Earn badges. Level up! 🚀', emoji: '💪' },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              className="how-step"
-              initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-            >
-              <div className="how-step-number">{item.step}</div>
-              <div className="how-step-content">
-                <span className="how-step-emoji">{item.emoji}</span>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-              {i < 3 && <div className="how-step-connector" />}
-            </motion.div>
-          ))}
+            { step: '01', title: 'Start Your Story', desc: 'Experience getting your first job offer — ₹8 LPA!', icon: Clapperboard },
+            { step: '02', title: 'The Surprise', desc: 'Your payslip says ₹52,000. Wait, what happened?!', icon: AlertCircle },
+            { step: '03', title: 'Decode & Learn', desc: 'Discover CTC, TDS, EPF through interactive quests', icon: Search },
+            { step: '04', title: 'Master Your Money', desc: 'Budget your salary. Earn badges. Level up!', icon: Dumbbell },
+          ].map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <motion.div
+                key={i}
+                className="how-step"
+                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+              >
+                <div className="how-step-number">{item.step}</div>
+                <div className="how-step-content">
+                  <div className="how-step-icon-wrap">
+                    <Icon size={18} />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+                {i < 3 && <div className="how-step-connector" />}
+              </motion.div>
+            );
+          })}
         </div>
       </section>
       
@@ -247,22 +270,27 @@ export default function Landing() {
       <section className="testimonials-section">
         <h2 className="section-heading">What First Jobbers Say</h2>
         <div className="testimonials-row">
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div
-              key={i}
-              className="testimonial-card glass"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-            >
-              <p className="testimonial-text">{t.text}</p>
-              <div className="testimonial-author">
-                <span className="testimonial-avatar">{t.emoji}</span>
-                <span className="testimonial-name">{t.name}</span>
-              </div>
-            </motion.div>
-          ))}
+          {TESTIMONIALS.map((t, i) => {
+            const Icon = t.icon;
+            return (
+              <motion.div
+                key={i}
+                className="testimonial-card glass"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+              >
+                <p className="testimonial-text">{t.text}</p>
+                <div className="testimonial-author">
+                  <div className="testimonial-icon-wrap">
+                    <Icon size={16} />
+                  </div>
+                  <span className="testimonial-name">{t.name}</span>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
       
@@ -273,10 +301,10 @@ export default function Landing() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
         >
-          <h2>Ready to Decode Your Salary? 🚀</h2>
+          <h2>Ready to Decode Your Salary?</h2>
           <p>Join thousands of first jobbers who finally understand their payslip.</p>
           <button className="btn btn-primary hero-cta" onClick={() => navigate('/quest')}>
-            Start Quest Now ⚔️
+            <Play size={16} /> Start Quest Now
           </button>
         </motion.div>
       </section>
@@ -284,8 +312,11 @@ export default function Landing() {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="footer-brand">
-          <span className="footer-logo">💰 WealthQuest</span>
-          <span className="footer-tagline">Duolingo for Money — Built with ❤️ for India's First Jobbers</span>
+          <div className="footer-logo">
+            <Coins size={18} />
+            <span>WealthQuest</span>
+          </div>
+          <span className="footer-tagline">Duolingo for Money — Built with <Heart size={12} className="footer-heart" /> for India's First Jobbers</span>
         </div>
       </footer>
     </div>

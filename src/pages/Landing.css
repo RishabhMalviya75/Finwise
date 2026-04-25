@@ -11,11 +11,10 @@
   z-index: 0;
 }
 
-.floating-particle {
+.floating-dot {
   position: absolute;
-  font-size: 1.5rem;
-  opacity: 0.15;
-  filter: blur(0.5px);
+  border-radius: 50%;
+  box-shadow: 0 0 10px currentColor;
 }
 
 /* — Hero — */
@@ -91,6 +90,9 @@
   color: var(--gold-primary);
   margin-bottom: 16px;
   letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .hero-description {
@@ -153,6 +155,9 @@
 .hero-cta {
   padding: 16px 36px;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .hero-cta-subtext {
@@ -252,8 +257,9 @@
   box-shadow: var(--shadow-gold);
 }
 
-.hcb-emoji {
-  font-size: 1.5rem;
+.hcb-icon {
+  color: var(--gold-primary);
+  margin: 0 auto;
 }
 
 .hcb-text {
@@ -268,6 +274,10 @@
   font-family: var(--font-mono);
   font-size: 0.65rem;
   color: var(--neon-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 /* — Features — */
@@ -291,10 +301,17 @@
   transition: all 0.3s ease;
 }
 
-.feature-emoji {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: 12px;
+.feature-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--neon-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .feature-title {
@@ -363,10 +380,16 @@
   flex: 1;
 }
 
-.how-step-emoji {
-  font-size: 1.3rem;
-  display: inline-block;
-  margin-bottom: 4px;
+.how-step-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 230, 118, 0.1);
+  color: var(--success);
+  margin-bottom: 8px;
 }
 
 .how-step-content h3 {
@@ -426,8 +449,15 @@
   gap: 8px;
 }
 
-.testimonial-avatar {
-  font-size: 1.3rem;
+.testimonial-icon-wrap {
+  color: var(--gold-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 184, 0, 0.1);
+  border-radius: 50%;
 }
 
 .testimonial-name {
@@ -479,11 +509,23 @@
   font-weight: 700;
   font-size: 1.1rem;
   color: var(--text-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .footer-tagline {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.footer-heart {
+  color: var(--danger);
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 2px;
+  fill: var(--danger);
 }
 
 /* — Responsive — */

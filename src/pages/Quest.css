@@ -4,19 +4,42 @@
   position: relative;
 }
 
-/* Phase Header */
-.phase-header {
-  text-align: center;
-  padding: 20px;
+/* Stage Header (visible when inside a stage) */
+.stage-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.phase-title {
+.back-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.back-btn:hover {
+  border-color: rgba(0, 212, 255, 0.2);
+  color: var(--neon-primary);
+}
+
+.stage-title {
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--neon-primary);
   text-transform: uppercase;
-  letter-spacing: 2.5px;
+  letter-spacing: 2px;
   text-shadow: 0 0 10px var(--neon-glow);
 }
 
@@ -44,6 +67,11 @@
   transform: rotate(45deg);
 }
 
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
 /* Complete Screen */
 .quest-complete {
   padding: 20px;
@@ -58,8 +86,11 @@
 }
 
 .complete-trophy {
-  font-size: 4rem;
   margin-bottom: 16px;
+}
+
+.complete-trophy-icon {
+  color: var(--gold-primary);
   filter: drop-shadow(0 0 30px rgba(255, 184, 0, 0.4));
 }
 
@@ -91,7 +122,12 @@
 .stat-item {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
+}
+
+.stat-icon {
+  margin-bottom: 2px;
 }
 
 .stat-value {
@@ -127,31 +163,21 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .earned-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 16px 14px;
+  padding: 8px 14px;
   background: rgba(255, 184, 0, 0.05);
   border: 1px solid rgba(255, 184, 0, 0.15);
   border-radius: var(--radius-md);
-  min-width: 90px;
-}
-
-.earned-badge-emoji {
-  font-size: 1.8rem;
 }
 
 .earned-badge-name {
   font-family: var(--font-display);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--gold-primary);
-  text-align: center;
   letter-spacing: 0.5px;
 }
 
@@ -159,10 +185,16 @@
 .complete-next {
   padding-top: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
 }
 
-.complete-next-text {
-  font-size: 0.85rem;
+.complete-locked-module {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  margin-bottom: 16px;
 }

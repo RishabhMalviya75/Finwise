@@ -56,6 +56,10 @@
 }
 
 .badge-unlock-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 0.8rem;
@@ -65,10 +69,17 @@
   text-shadow: 0 0 20px var(--gold-glow);
 }
 
-.badge-emoji-display {
-  font-size: 4rem;
-  margin: 16px 0;
-  filter: drop-shadow(0 0 20px rgba(255, 184, 0, 0.4));
+.badge-icon-display {
+  margin: 20px 0;
+}
+
+.badge-award-icon {
+  color: var(--gold-primary);
+  filter: drop-shadow(0 0 20px rgba(255, 184, 0, 0.5));
+}
+
+.badge-xp-icon {
+  color: var(--neon-primary);
 }
 
 .badge-name {
@@ -88,6 +99,10 @@
 
 .badge-xp-reward {
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .badge-xp-amount {
