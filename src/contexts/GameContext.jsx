@@ -110,6 +110,13 @@ const BADGE_DEFINITIONS = {
     lucideIcon: 'shield',
     xpReward: 300,
   },
+  'tax-shield': {
+    id: 'tax-shield',
+    name: 'Tax Shield Master',
+    description: 'Mastered GST and Input Tax Credit concepts',
+    lucideIcon: 'shield-check',
+    xpReward: 400,
+  },
 };
 
 function gameReducer(state, action) {
